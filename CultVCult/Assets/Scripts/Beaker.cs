@@ -46,7 +46,7 @@ public class Beaker : MonoBehaviour {
 		}
 	}
 
-	private void ClearBeaker()
+	public void ClearBeaker()
 	{
 		m_liquidVolume = 0;
 		m_BeakerColor = Color.white;

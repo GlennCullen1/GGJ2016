@@ -26,7 +26,8 @@ public class Colors
 		MAX_COLOR,
 
 		WASTE = MAX_COLOR,
-	};
+		EMPTY
+  	};
 
 	private static ColorNames[,] mixes = 	// primary+1 x secondary+1
 	{
@@ -39,7 +40,7 @@ public class Colors
 	{
 		0xD63B2BFF,	0xFFEA3DFF,	0x3794EBFF,	0x09921CFF,	0xE9660FFF,	0x6F29EEFF,	
 		0x0ECCD1FF,	0xC5F913FF,	0xA73306FF,	0xE88E0EFF,	0xCC2457FF,	0x7F7FF4FF,
-		0x3A2B19FF
+		0x3A2B19FF, 0xFFFFFFFF
 	};
 	
 	public static Dictionary<Color, ColorNames> floatToNames = new Dictionary<Color, ColorNames>
@@ -48,10 +49,9 @@ public class Colors
 		{ HexToColor(0x09921CFF), ColorNames.GREEN }, 	  { HexToColor(0xE9660FFF), ColorNames.ORANGE}, 	{ HexToColor(0x6F29EEFF), ColorNames.PURPLE },
 		{ HexToColor(0x0ECCD1FF), ColorNames.TURQUOISE }, { HexToColor(0xC5F913FF), ColorNames.CHARTREUSE}, { HexToColor(0xA73306FF), ColorNames.VERMILLION },
 		{ HexToColor(0xE88E0EFF), ColorNames.AMBER }, 	  { HexToColor(0xCC2457FF), ColorNames.BYZANTIUM}, 	{ HexToColor(0x7F7FF4FF), ColorNames.PERIWINKLE },
-		{ HexToColor(0x3A2B19FF), ColorNames.WASTE }
-		
+		{ HexToColor(0x3A2B19FF), ColorNames.WASTE },     { HexToColor(0xFFFFFFFF), ColorNames.EMPTY}
 	};
-	
+
 	/// <summary>
 	/// Mixs the colors. 
 	/// </summary>
