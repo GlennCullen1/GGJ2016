@@ -27,8 +27,8 @@ public class Colors
 	private static ColorNames[,] mixes = 	// primary+1 x secondary+1
 	{
 		{ ColorNames.RED, ColorNames.ORANGE, ColorNames.PURPLE, ColorNames.WASTE, ColorNames.VERMILLION, ColorNames.BYZANTIUM },
-		{ ColorNames.ORANGE, ColorNames.GREEN, ColorNames.YELLOW, ColorNames.CHARTREUSE, ColorNames.AMBER, ColorNames.WASTE },
-		{ ColorNames.PURPLE, ColorNames.BLUE, ColorNames.GREEN, ColorNames.TURQUOISE, ColorNames.WASTE, ColorNames.PERIWINKLE }
+		{ ColorNames.ORANGE, ColorNames.YELLOW, ColorNames.GREEN, ColorNames.CHARTREUSE, ColorNames.AMBER, ColorNames.WASTE },
+		{ ColorNames.PURPLE, ColorNames.GREEN, ColorNames.BLUE, ColorNames.TURQUOISE, ColorNames.WASTE, ColorNames.PERIWINKLE }
 	};
 
 	private static uint[] colorRGBs = 
@@ -37,7 +37,7 @@ public class Colors
 		0x0ECCD1FF,	0xC5F913FF,	0xA73306FF,	0xE88E0EFF,	0xCC2457FF,	0x7F7FF4FF
 	};
 	
-	private static Dictionary<Color, ColorNames> floatToNames = new Dictionary<Color, ColorNames>
+	public static Dictionary<Color, ColorNames> floatToNames = new Dictionary<Color, ColorNames>
 	{
 		{ HexToColor(0xD63B2BFF), ColorNames.RED }, { HexToColor(0xFFEA3DFF), ColorNames.YELLOW}, { HexToColor(0x3794EBFF), ColorNames.BLUE },
 		{ HexToColor(0x09921CFF), ColorNames.GREEN }, { HexToColor(0xE9660FFF), ColorNames.ORANGE}, { HexToColor(0x6F29EEFF), ColorNames.PURPLE },
@@ -57,7 +57,7 @@ public class Colors
 		Color notThere = new Color(1, 1, 1, 0);
 
 		if (!floatToNames.ContainsKey(primary)  
-		    || floatToNames[primary] > ColorNames.PRIMARY 
+	   	|| floatToNames[primary] > ColorNames.PRIMARY 
 		    || floatToNames[other] > ColorNames.SECONDARY)
 		{
 			return notThere;
@@ -73,7 +73,7 @@ public class Colors
 		float r = ((bigint >> 16) & 255) / 256.0f;
 		float g = ((bigint >> 8) & 255) / 256.0f;
 		float b = (bigint & 255) / 256.0f;
-		
+		//float a = 1;
 		return new Color(r, g, b);
 	}
 	
@@ -91,7 +91,15 @@ public class Colors
 	{
 		return HexToColor(colorRGBs[(int)ColorNames.YELLOW]);
 	}	
-	
+
+	public static Color GetRandomColor()
+	{
+		int num = Random.Range ((int)0, (int)ColorNames.MAX_COLOR);
+
+		return HexToColor (colorRGBs[num]);
+	}
+
+
 //	
 //	// Note that Color32 and Color implictly convert to each other. You may pass a Color object to this method without first casting it.
 //	private static string ColorToHex(Color32 color)

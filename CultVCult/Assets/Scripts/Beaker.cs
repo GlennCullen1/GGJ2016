@@ -4,7 +4,7 @@ using System.Collections;
 public class Beaker : MonoBehaviour {
 	[SerializeField] private Color m_BeakerColor;
 	private SpriteRenderer m_SpriteRenderer;
-	private Vector2 m_GridCoords;
+	[SerializeField]private Vector2 m_GridCoords;
 	public GameObject m_BackDrop;
 	private int m_liquidVolume = 0;
 	private const int MaxLiquidVolume = 3;
@@ -12,9 +12,9 @@ public class Beaker : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		// m_BeakerColor = new Color(0, 0, 0, 0);
-		m_BeakerColor = Colors.GetRed();
-		Mix(Colors.GetBlue());
-		Mix(Colors.GetRed());
+		//m_BeakerColor = Colors.GetRed();
+		//Mix(Colors.GetBlue());
+		//Mix(Colors.GetRed());
 		m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
@@ -51,10 +51,11 @@ public class Beaker : MonoBehaviour {
 	public void Selected(GameObject Player, Color color)
 	{
 		GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ().BeakerClicked (m_GridCoords, Player, color);
+		Debug.Log ("select");
 	}
 
 	public void Select(Color color)
-	{
+	{ 
 		GetComponent<ParticleSystem> ().startColor = color;
 		GetComponent<ParticleSystem> ().enableEmission = true;
 		Debug.Log ("did it");
@@ -66,13 +67,13 @@ public class Beaker : MonoBehaviour {
 	}
 	public void Mix(Color Mixer)
 	{
-		if(m_BeakerColor.a == 0)
+		if(m_liquidVolume == 0)
 		{
 			SetColor(Mixer);	
 		}
 		else if(m_liquidVolume < MaxLiquidVolume)
 		{
-			Debug.Log (Colors.MixColors(Mixer, m_BeakerColor).ToString());
+			//Debug.Log (Colors.MixColors(Mixer, m_BeakerColor).ToString());
 			SetColor(Colors.MixColors(Mixer, m_BeakerColor));
 		}
 		else

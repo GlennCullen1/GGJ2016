@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-enum GameState{PreMatch,Match,OutCome}
+enum GameState{PreMatch,Match,OutCome, GameOver}
 
 public class GameManager : MonoBehaviour {
 
@@ -46,6 +46,13 @@ public class GameManager : MonoBehaviour {
 		m_Beakers [3, 3].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(1,2,0), Quaternion.identity);
 		m_Beakers [3, 3].m_IsOccupied = true;
 		m_Beakers [3, 3].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(3,3));
+
+		m_Beakers [4, 4] = new BeakerWrapper ();
+		m_Beakers [4, 4].m_Locked = false;
+		m_Beakers [4, 4].m_PlayerID = -1;
+		m_Beakers [4, 4].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(-2,0,0), Quaternion.identity);
+		m_Beakers [4, 4].m_IsOccupied = true;
+		m_Beakers [4, 4].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(4,4));
 	}
 	
 	// Update is called once per frame
@@ -58,6 +65,7 @@ public class GameManager : MonoBehaviour {
 				m_GameState = GameState.Match;
 				UnlockPlayers();
 				m_NewMatch =true;
+				ResetObjectives();
 				RevealObjective();
 			}
 			break;
@@ -70,7 +78,7 @@ public class GameManager : MonoBehaviour {
 			}
 			if(m_TimeOnRound > 0)
 			{
-				Debug.Log( m_TimeOnRound );
+				//Debug.Log( m_TimeOnRound );
 				m_TimeOnRound = m_TimeOnRound - Time.deltaTime;
 
 				switch (m_RevealedObjectives)
@@ -100,8 +108,19 @@ public class GameManager : MonoBehaviour {
 			break;
 		case GameState.OutCome:
 			LockPlayers();
+			if(!DidTheyDie())
+			{
+				m_GameState = GameState.PreMatch;
+				Debug.Log ("we made it");
+			}
+			else
+			{
+				m_GameState = GameState.GameOver;
+			}
+			break;
+		case GameState.GameOver:
+			Debug.Log("You were all devoured");
 			m_GameState = GameState.PreMatch;
-
 			break;
 		}
 
@@ -130,10 +149,97 @@ public class GameManager : MonoBehaviour {
 	void RevealObjective()
 	{
 		if (m_RevealedObjectives < 3) {
-			m_WishList[m_RevealedObjectives].GetComponent<SpriteRenderer>().color = Color.green;
+			m_WishList[m_RevealedObjectives].GetComponent<SpriteRenderer>().color = Colors.GetRandomColor();
 			m_RevealedObjectives++;
 		}
 	}
+
+	void ResetObjectives()
+	{
+		foreach (GameObject wish in m_WishList) {
+			wish.GetComponent<SpriteRenderer>().color = Color.black;
+			m_RevealedObjectives = 0;
+		}
+	 }
+
+	bool DidTheyDie()
+	{
+		bool first = false;
+		bool second = false;
+		bool third = false;
+		/*
+		foreach (GameObject wish in m_WishList) {
+			foreach( BeakerWrapper beaker in m_Beakers)
+			{
+				if( beaker.m_Beaker)
+				{
+					if(!first)
+					{ 
+						if(Colors.floatToNames[wish.GetComponent<SpriteRenderer>().color] == 
+						   Colors.floatToNames[beaker.m_Beaker.GetComponent<Beaker>().GetColor()] 
+						   && !beaker.m_Locked )
+						{
+							first = true;
+							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
+						}
+					}
+					if(!second)
+					{
+						if(wish.GetComponent<SpriteRenderer>().color == beaker.m_Beaker.GetComponent<Beaker>().GetColor() && !beaker.m_Locked )
+						{
+							second = true;
+							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
+						}
+					}
+					if (!third)
+					{
+						if(wish.GetComponent<SpriteRenderer>().color == beaker.m_Beaker.GetComponent<Beaker>().GetColor() && !beaker.m_Locked )
+						{
+							third = true;
+							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
+						}
+					}
+				}
+			}
+		}*/
+		foreach (BeakerWrapper beaker in m_Beakers) {
+			if (beaker.m_Beaker) {
+				foreach (GameObject wish in m_WishList) {
+					if (!first) {
+						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
+							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
+							first = true;
+							break;
+						}
+					}
+					if (!second) {
+						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
+							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
+							second = true;
+							break;
+						}
+					}
+					if (!third) {
+						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
+							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
+							third = true;
+							break;
+						}
+					}
+				
+				}
+			}
+		}
+
+		if(first&&second&&third)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	 }
 
 	public void BeakerClicked(Vector2 id, GameObject Player, Color color)
 	{
@@ -168,7 +274,9 @@ public class GameManager : MonoBehaviour {
 				m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Select(playerC);
 			}
 		}*/
+		Debug.Log (id.x+","+id.y);
 		m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
+
 	}
 }
 

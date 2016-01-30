@@ -26,15 +26,16 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Beaker") {
 			if(Input.GetButtonDown(m_InputName + "Red"))
 			{
-				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Color.red);
+				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Colors.GetRed());
 			}
 			else if(Input.GetButtonDown(m_InputName + "Blue"))
 			{
-				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Color.blue);
+				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Colors.GetBlue());
+				Debug.Log ("hit");
 			}
 			else if(Input.GetButtonDown(m_InputName + "Yellow"))
 			{
-				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Color.yellow);
+				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Colors.GetYellow());
 			}
 		}
 	}
