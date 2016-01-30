@@ -4,22 +4,30 @@ using System.Collections;
 public class Player : MonoBehaviour {
 
 	public Color m_PlayerColor;
+	public Color m_TargetColor;
 	public GameObject m_Cursor;
+	public GameObject m_DisplayTarget;
 	public float m_Speed = 5;
 	public string m_InputName;
+	public int m_Score;
+	private GameManager m_GameManager;
 	bool m_Frozen;
 	// Use this for initialization
 	void Start () {
-		m_PlayerColor = Color.magenta;
+		m_Score = 0;
+		m_GameManager = GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ();
+		//m_PlayerColor = Color.magenta;
 		m_Frozen = true;
+		NewTarget ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (!m_Frozen) {
-			gameObject.GetComponent<SpriteRenderer> ().color = m_PlayerColor;
+			//gameObject.GetComponent<SpriteRenderer> ().color = m_PlayerColor;
 			gameObject.transform.Translate (Input.GetAxis (m_InputName + "Horizontal") * m_Speed * Time.deltaTime, Input.GetAxis (m_InputName + "Vertical") * m_Speed * Time.deltaTime, 0);
 		}
+		m_DisplayTarget.GetComponent<SpriteRenderer> ().color = m_TargetColor;
 	}
 	void OnTriggerStay2D(Collider2D other)
 	{
@@ -39,9 +47,19 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void GetScore()
+	{
+		m_Score +=m_GameManager.HowManyColor (m_TargetColor);
+	}
+
 	public void Freeze()
 	{
 		m_Frozen = true;
+	}
+
+	public void NewTarget()
+	{
+		m_TargetColor = Colors.GetRandomColor ();
 	}
 
 	public void UnFreeze()

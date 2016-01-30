@@ -30,16 +30,22 @@ public class GameManager : MonoBehaviour {
 		for (int cntx = 0; cntx < m_ArrayX; cntx++) {
 			for (int cnty = 0; cnty < m_ArrayY; cnty++) {
 				m_Beakers [cntx, cnty].m_IsOccupied = false;
+				if(Random.Range(0,100)<m_SpawnChance)
+				{
+					//Vector3 Pos = new Vector3( (float)((-(4.25*m_ArrayX/2)+(cntx*4.25))*m_BeakerPrefab.transform.localScale.x), (float)((-(4.9*m_ArrayY/2)+cnty*4.9))*m_BeakerPrefab.transform.localScale.y,0.0f);
+					Vector3 Pos = new Vector3((float)(-8+3.5*cntx),(float)(-4+1.5*cnty+0.5),0.0f);
+					m_Beakers [cntx, cnty] = new BeakerWrapper ();
+					m_Beakers [cntx, cnty].m_Locked = false;
+					m_Beakers [cntx, cnty].m_PlayerID = -1;
+					m_Beakers [cntx, cnty].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,Pos, Quaternion.identity);
+					m_Beakers [cntx, cnty].m_IsOccupied = true;
+					m_Beakers [cntx, cnty].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(cntx,cnty));
+				}
 			}
 		}
 
-		m_Beakers [2, 2] = new BeakerWrapper ();
-		m_Beakers [2, 2].m_Locked = false;
-		m_Beakers [2, 2].m_PlayerID = -1;
-		m_Beakers [2, 2].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(0,0,0), Quaternion.identity);
-		m_Beakers [2, 2].m_IsOccupied = true;
-		m_Beakers [2,2].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(2,2));
-	
+
+	/*
 		m_Beakers [3, 3] = new BeakerWrapper ();
 		m_Beakers [3, 3].m_Locked = false;
 		m_Beakers [3, 3].m_PlayerID = -1;
@@ -52,7 +58,7 @@ public class GameManager : MonoBehaviour {
 		m_Beakers [4, 4].m_PlayerID = -1;
 		m_Beakers [4, 4].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(-2,0,0), Quaternion.identity);
 		m_Beakers [4, 4].m_IsOccupied = true;
-		m_Beakers [4, 4].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(4,4));
+		m_Beakers [4, 4].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(4,4));*/
 	}
 	
 	// Update is called once per frame
@@ -62,9 +68,11 @@ public class GameManager : MonoBehaviour {
 		case GameState.PreMatch:
 			if (Input.GetButtonDown("Start"))
 			{
+
 				m_GameState = GameState.Match;
 				UnlockPlayers();
 				m_NewMatch =true;
+				ResetAllBeakers();
 				ResetObjectives();
 				RevealObjective();
 			}
@@ -126,6 +134,9 @@ public class GameManager : MonoBehaviour {
 
 
 	}
+
+
+
 	private void UnlockPlayers()
 	{
 		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -134,7 +145,8 @@ public class GameManager : MonoBehaviour {
 		{
 			player.GetComponent<Player>().UnFreeze();
 		}
-	}
+	} 
+
 
 	private void LockPlayers()
 	{
@@ -143,6 +155,16 @@ public class GameManager : MonoBehaviour {
 		foreach(GameObject player in players)
 		{
 			player.GetComponent<Player>().Freeze();
+		}
+	}
+
+	void ResetAllBeakers()
+	{
+		foreach (BeakerWrapper beaker in m_Beakers) {
+			if(beaker.m_Beaker)
+			{
+				beaker.m_Beaker.GetComponent<Beaker>().ClearBeaker();
+			}
 		}
 	}
 
@@ -167,44 +189,11 @@ public class GameManager : MonoBehaviour {
 		bool first = false;
 		bool second = false;
 		bool third = false;
-		/*
-		foreach (GameObject wish in m_WishList) {
-			foreach( BeakerWrapper beaker in m_Beakers)
-			{
-				if( beaker.m_Beaker)
-				{
-					if(!first)
-					{ 
-						if(Colors.floatToNames[wish.GetComponent<SpriteRenderer>().color] == 
-						   Colors.floatToNames[beaker.m_Beaker.GetComponent<Beaker>().GetColor()] 
-						   && !beaker.m_Locked )
-						{
-							first = true;
-							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
-						}
-					}
-					if(!second)
-					{
-						if(wish.GetComponent<SpriteRenderer>().color == beaker.m_Beaker.GetComponent<Beaker>().GetColor() && !beaker.m_Locked )
-						{
-							second = true;
-							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
-						}
-					}
-					if (!third)
-					{
-						if(wish.GetComponent<SpriteRenderer>().color == beaker.m_Beaker.GetComponent<Beaker>().GetColor() && !beaker.m_Locked )
-						{
-							third = true;
-							m_Beakers[(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,(int)beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y].m_Locked = true;
-						}
-					}
-				}
-			}
-		}*/
+		try{
 		foreach (BeakerWrapper beaker in m_Beakers) {
-			if (beaker.m_Beaker) {
+				if (beaker.m_Beaker && beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white) {
 				foreach (GameObject wish in m_WishList) {
+	
 					if (!first) {
 						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
 							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
@@ -229,6 +218,10 @@ public class GameManager : MonoBehaviour {
 				
 				}
 			}
+			}}
+		catch(System.Exception ex)
+		{
+			Debug.Log(ex);
 		}
 
 		if(first&&second&&third)
@@ -278,7 +271,22 @@ public class GameManager : MonoBehaviour {
 		m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
 
 	}
+
+	public int HowManyColor(Color targetcolor)
+	{ int cnt = 0;
+		foreach (BeakerWrapper beaker in m_Beakers) {
+			if(beaker.m_Beaker &&
+			   Colors.floatToNames[beaker.m_Beaker.GetComponent<Beaker>().GetColor()] == Colors.floatToNames[targetcolor])
+			{
+				cnt++;
+			}
+		}
+		return cnt;
+	}
 }
+			                  
+			                  
+
 
 public struct BeakerWrapper
 {

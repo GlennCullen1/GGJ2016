@@ -21,7 +21,8 @@ public class Colors
 		AMBER,
 		BYZANTIUM,
 		PERIWINKLE,
-		MAX_COLOR
+		MAX_COLOR,
+		EMPTY
 	};
 
 	private static ColorNames[,] mixes = 	// primary+1 x secondary+1
@@ -43,8 +44,9 @@ public class Colors
 		{ HexToColor(0x09921CFF), ColorNames.GREEN }, { HexToColor(0xE9660FFF), ColorNames.ORANGE}, { HexToColor(0x6F29EEFF), ColorNames.PURPLE },
 		{ HexToColor(0x0ECCD1FF), ColorNames.TURQUOISE }, { HexToColor(0xC5F913FF), ColorNames.CHARTREUSE}, { HexToColor(0xA73306FF), ColorNames.VERMILLION },
 		{ HexToColor(0xE88E0EFF), ColorNames.AMBER }, { HexToColor(0xCC2457FF), ColorNames.BYZANTIUM}, { HexToColor(0x7F7FF4FF), ColorNames.PERIWINKLE },
-		
-	};
+		{ HexToColor(0xFFFFFFFF), ColorNames.EMPTY}
+	}
+	;
 	
 	/// <summary>
 	/// Mixs the colors. 
