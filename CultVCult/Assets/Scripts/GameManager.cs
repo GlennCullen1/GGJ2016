@@ -120,10 +120,12 @@ public class GameManager : MonoBehaviour {
 			{
 				m_GameState = GameState.PreMatch;
 				Debug.Log ("we made it");
+				UpdateScores();
 			}
 			else
 			{
 				m_GameState = GameState.GameOver;
+				UpdateScores();
 			}
 			break;
 		case GameState.GameOver:
@@ -276,12 +278,22 @@ public class GameManager : MonoBehaviour {
 	{ int cnt = 0;
 		foreach (BeakerWrapper beaker in m_Beakers) {
 			if(beaker.m_Beaker &&
+			   beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white &&
 			   Colors.floatToNames[beaker.m_Beaker.GetComponent<Beaker>().GetColor()] == Colors.floatToNames[targetcolor])
 			{
 				cnt++;
 			}
 		}
 		return cnt;
+	}
+
+	private void UpdateScores()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		
+		foreach (GameObject player in players) {
+			player.GetComponent<Player>().GetScore();
+		}
 	}
 }
 			                  

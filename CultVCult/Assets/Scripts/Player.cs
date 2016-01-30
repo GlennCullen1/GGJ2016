@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
 	public Color m_TargetColor;
 	public GameObject m_Cursor;
 	public GameObject m_DisplayTarget;
+	public GameObject m_ScoreOrb;
 	public float m_Speed = 5;
 	public string m_InputName;
 	public int m_Score;
@@ -49,7 +50,17 @@ public class Player : MonoBehaviour {
 
 	public void GetScore()
 	{
-		m_Score +=m_GameManager.HowManyColor (m_TargetColor);
+		int numberofbeakers = m_GameManager.HowManyColor (m_TargetColor);
+		float dir = -1 * Mathf.Sign (m_DisplayTarget.transform.position.x);
+	
+
+		for (int count = 1; count <= numberofbeakers; count++) {
+			Vector3 pos = m_DisplayTarget.transform.position;
+			pos.x += (count+m_Score*0.2f)*dir;
+			Instantiate(m_ScoreOrb,pos,Quaternion.identity);
+		}
+
+		m_Score += numberofbeakers;
 	}
 
 	public void Freeze()
@@ -66,4 +77,5 @@ public class Player : MonoBehaviour {
 	{
 		m_Frozen = false;
 	}
+
 }
