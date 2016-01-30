@@ -51,7 +51,7 @@ public class Beaker : MonoBehaviour {
 		if (!bOverflowing) {
 			bOverflowing = true;
 			m_SpriteRenderer.sprite = m_beakers [4];	// 4. overflowing
-			yield return new WaitForSeconds (0.4f);
+			yield return new WaitForSeconds (1.5f);
 
 			ClearBeaker ();
 			bOverflowing = false;
