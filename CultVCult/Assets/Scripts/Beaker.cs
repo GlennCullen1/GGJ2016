@@ -6,13 +6,10 @@ public class Beaker : MonoBehaviour {
 	[SerializeField] private Sprite[] m_beakers;
 	private SpriteRenderer m_SpriteRenderer;
 	[SerializeField]private Vector2 m_GridCoords;
-	public GameObject m_BackDrop;
 	private int m_liquidVolume = 0;
 	private const int MaxLiquidVolume = 3;
 	private bool bOverflowing = false;
 
-	
-	// Use this for initialization
 	void Start () {
 		m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		ClearBeaker ();
@@ -20,13 +17,9 @@ public class Beaker : MonoBehaviour {
 		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
 	
-	// Update is called once per frame
 	void Update () 
 	{
-		if (m_SpriteRenderer.color != m_BeakerColor) 
-		{
-			m_SpriteRenderer.color = m_BeakerColor;
-		}
+		m_SpriteRenderer.color = m_BeakerColor;
 	}
 
 	private void SetColor(Color color)
