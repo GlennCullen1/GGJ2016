@@ -54,14 +54,14 @@ public class Colors
 	/// <param name="other">Other.</param>
 	public static Color MixColors(Color primary, Color other)
 	{
-		Color notThere = new Color(1, 1, 1, 0);
+		// Color notThere = new Color(1, 1, 1, 0);
 
-		if (!floatToNames.ContainsKey(primary)  
-		    || floatToNames[primary] > ColorNames.PRIMARY 
-		    || floatToNames[other] > ColorNames.SECONDARY)
-		{
-			return notThere;
-		}
+//		if (!floatToNames.ContainsKey(primary)  
+//		    || floatToNames[primary] > ColorNames.PRIMARY 
+//		    || floatToNames[other] > ColorNames.SECONDARY)
+//		{
+//			return notThere;
+//		}
 		
 		uint color = colorRGBs[(int)mixes[(int)floatToNames[primary], (int)floatToNames[other]]];
 		return HexToColor(color);

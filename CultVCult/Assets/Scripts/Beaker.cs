@@ -3,19 +3,20 @@ using System.Collections;
 
 public class Beaker : MonoBehaviour {
 	[SerializeField] private Color m_BeakerColor;
+	[SerializeField] private Sprite[] m_beakers;
 	private SpriteRenderer m_SpriteRenderer;
 	private Vector2 m_GridCoords;
 	public GameObject m_BackDrop;
 	private int m_liquidVolume = 0;
 	private const int MaxLiquidVolume = 3;
+	private bool bOverflowing = false;
+
 	
 	// Use this for initialization
 	void Start () {
-		// m_BeakerColor = new Color(0, 0, 0, 0);
-		m_BeakerColor = Colors.GetRed();
-		Mix(Colors.GetBlue());
-		Mix(Colors.GetRed());
 		m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
+		ClearBeaker ();
+		m_SpriteRenderer.sprite = m_beakers[0];
 		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
 	
@@ -28,17 +29,42 @@ public class Beaker : MonoBehaviour {
 		}
 	}
 
-	public Color GetColor()
+//	public Color GetColor()
+//	{
+//		return m_BeakerColor;
+//	}
+
+	private void SetColor(Color color)
 	{
-		return m_BeakerColor;
+			m_liquidVolume++;
+			if (m_liquidVolume > MaxLiquidVolume) {
+				// set to overflowing for a short bit and then 
+				StartCoroutine (AssignOverflowSprite ());
+			} else {
+				m_SpriteRenderer.sprite = m_beakers [m_liquidVolume];
+				m_BeakerColor = color;
+			}
 	}
 
-	public void SetColor(Color color)
+	IEnumerator AssignOverflowSprite()
 	{
-		m_liquidVolume++;
-		m_BeakerColor = color;
+		if (!bOverflowing) {
+			bOverflowing = true;
+			m_SpriteRenderer.sprite = m_beakers [4];	// 4. overflowing
+			yield return new WaitForSeconds (0.4f);
+
+			ClearBeaker ();
+			bOverflowing = false;
+		}
 	}
 
+	private void ClearBeaker()
+	{
+		m_liquidVolume = 0;
+		m_BeakerColor = Color.white;
+		m_SpriteRenderer.sprite = m_beakers[m_liquidVolume];
+
+	}
 	public void SetCoords(Vector2 coords)
 	{
 		m_GridCoords = coords;
@@ -64,20 +90,19 @@ public class Beaker : MonoBehaviour {
 	{
 		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
-	public void Mix(Color Mixer)
+	public void Mix(Color mixer)
 	{
-		if(m_BeakerColor.a == 0)
+		if(m_liquidVolume == 0)
 		{
-			SetColor(Mixer);	
+			SetColor(mixer);	
 		}
 		else if(m_liquidVolume < MaxLiquidVolume)
 		{
-			Debug.Log (Colors.MixColors(Mixer, m_BeakerColor).ToString());
-			SetColor(Colors.MixColors(Mixer, m_BeakerColor));
+			SetColor(Colors.MixColors(mixer, m_BeakerColor));
 		}
 		else
 		{
-			// overflow
+			SetColor (m_BeakerColor);	// it's going to overflow,
 		}
 	}
 }
