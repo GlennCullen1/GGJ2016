@@ -29,6 +29,13 @@ public class GameManager : MonoBehaviour {
 		m_Beakers [2, 2].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(0,0,0), Quaternion.identity);
 		m_Beakers [2, 2].m_IsOccupied = true;
 		m_Beakers [2,2].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(2,2));
+	
+		m_Beakers [3, 3] = new BeakerWrapper ();
+		m_Beakers [3, 3].m_Locked = false;
+		m_Beakers [3, 3].m_PlayerID = -1;
+		m_Beakers [3, 3].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(1,2,0), Quaternion.identity);
+		m_Beakers [3, 3].m_IsOccupied = true;
+		m_Beakers [3, 3].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(3,3));
 	}
 	
 	// Update is called once per frame
@@ -36,13 +43,40 @@ public class GameManager : MonoBehaviour {
 	
 	}
 
-	public void BeakerClicked(Vector2 id)
+	public void BeakerClicked(Vector2 id, GameObject Player, Color color)
 	{
+		/*
 		if (m_Beakers [(int)id.x, (int)id.y].m_Locked != true) {
+
+			//HERE GET PLAYER ID
+			int PlayerID = 1;
 			m_Beakers [(int)id.x, (int)id.y].m_Locked = true;
-			m_Beakers [(int)id.x, (int)id.y].m_PlayerID = m_LocalId;
+			m_Beakers [(int)id.x, (int)id.y].m_PlayerID = PlayerID;
 			m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().SetColor(Color.green);
-		}
+			bool matched = false;
+			foreach (BeakerWrapper obj in m_Beakers)
+			{
+				if (obj.m_PlayerID == PlayerID && obj.m_Beaker != m_Beakers [(int)id.x, (int)id.y].m_Beaker && !matched  )
+				{
+					m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
+					obj.m_Beaker.GetComponent<Beaker>().DeSelect();
+					Vector2 loc = obj.m_Beaker.GetComponent<Beaker>().GetCoords();
+					m_Beakers[(int)loc.x,(int)loc.y].m_Locked = false;
+					m_Beakers [(int)id.x, (int)id.y].m_Locked = false;
+					m_Beakers[(int)loc.x,(int)loc.y].m_PlayerID = 0;
+					m_Beakers [(int)id.x, (int)id.y].m_PlayerID = 0;
+					//obk
+					matched = true;
+				}
+			}
+			if (matched == false)
+			{
+				//make a player color
+				Color playerC = Player.GetComponent<Player>().m_PlayerColor;
+				m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Select(playerC);
+			}
+		}*/
+		m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
 	}
 }
 
