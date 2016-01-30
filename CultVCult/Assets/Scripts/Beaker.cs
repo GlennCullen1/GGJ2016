@@ -5,10 +5,12 @@ public class Beaker : MonoBehaviour {
 	[SerializeField] private Color m_BeakerColor;
 	private SpriteRenderer m_SpriteRenderer;
 	private Vector2 m_GridCoords;
+	public GameObject m_BackDrop;
 	// Use this for initialization
 	void Start () {
 		m_BeakerColor = Color.black;
 		m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
+		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
 	
 	// Update is called once per frame
@@ -33,8 +35,28 @@ public class Beaker : MonoBehaviour {
 		m_GridCoords = coords;
 	}
 
-	void OnMouseDown()
+	public Vector2 GetCoords()
 	{
-		GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ().BeakerClicked (m_GridCoords);
+		return m_GridCoords;
+	}
+	public void Selected(GameObject Player, Color color)
+	{
+		GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ().BeakerClicked (m_GridCoords, Player, color);
+	}
+
+	public void Select(Color color)
+	{
+		GetComponent<ParticleSystem> ().startColor = color;
+		GetComponent<ParticleSystem> ().enableEmission = true;
+		Debug.Log ("did it");
+	}
+
+	public void DeSelect()
+	{
+		GetComponent<ParticleSystem> ().enableEmission = false;
+	}
+	public void Mix(Color Mixer)
+	{
+		SetColor (Mixer);
 	}
 }
