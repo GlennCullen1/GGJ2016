@@ -6,16 +6,24 @@ public class Beaker : MonoBehaviour {
 	private SpriteRenderer m_SpriteRenderer;
 	private Vector2 m_GridCoords;
 	public GameObject m_BackDrop;
+	private int m_liquidVolume = 0;
+	private const int MaxLiquidVolume = 3;
+	
 	// Use this for initialization
 	void Start () {
-		m_BeakerColor = Color.black;
+		// m_BeakerColor = new Color(0, 0, 0, 0);
+		m_BeakerColor = Colors.GetRed();
+		Mix(Colors.GetBlue());
+		Mix(Colors.GetRed());
 		m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		GetComponent<ParticleSystem> ().enableEmission = false;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (m_SpriteRenderer.color != m_BeakerColor) {
+	void Update () 
+	{
+		if (m_SpriteRenderer.color != m_BeakerColor) 
+		{
 			m_SpriteRenderer.color = m_BeakerColor;
 		}
 	}
@@ -27,6 +35,7 @@ public class Beaker : MonoBehaviour {
 
 	public void SetColor(Color color)
 	{
+		m_liquidVolume++;
 		m_BeakerColor = color;
 	}
 
@@ -57,6 +66,18 @@ public class Beaker : MonoBehaviour {
 	}
 	public void Mix(Color Mixer)
 	{
-		SetColor (Mixer);
+		if(m_BeakerColor.a == 0)
+		{
+			SetColor(Mixer);	
+		}
+		else if(m_liquidVolume < MaxLiquidVolume)
+		{
+			Debug.Log (Colors.MixColors(Mixer, m_BeakerColor).ToString());
+			SetColor(Colors.MixColors(Mixer, m_BeakerColor));
+		}
+		else
+		{
+			// overflow
+		}
 	}
 }

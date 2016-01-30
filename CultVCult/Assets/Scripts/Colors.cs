@@ -77,7 +77,20 @@ public class Colors
 		return new Color(r, g, b);
 	}
 	
+	public static Color GetRed()
+	{
+		return HexToColor(colorRGBs[(int)ColorNames.RED]);
+	}
+
+	public static Color GetBlue()
+	{
+		return HexToColor(colorRGBs[(int)ColorNames.BLUE]);
+	}
 	
+	public static Color GetYellow()
+	{
+		return HexToColor(colorRGBs[(int)ColorNames.YELLOW]);
+	}	
 	
 //	
 //	// Note that Color32 and Color implictly convert to each other. You may pass a Color object to this method without first casting it.
