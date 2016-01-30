@@ -1,17 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+enum GameState{PreMatch,Match,OutCome}
+
 public class GameManager : MonoBehaviour {
 
 	BeakerWrapper[,] m_Beakers;
 	public int m_ArrayX, m_ArrayY;
 	float m_SpawnChance = 60;
 	public GameObject m_BeakerPrefab;
-
+	GameState m_GameState;
 	public int m_LocalId;
+	bool m_NewMatch;
+	public float m_TimeLimit;
+	public float m_TimeOnRound;
+	public float m_TimeReduction;
+	int m_RevealedObjectives = 0;
+	public GameObject[] m_WishList;
 	// Use this for initialization
 	void Start ()
 	{
+		m_NewMatch = true;
+		m_GameState = GameState.PreMatch;
 		m_Beakers = new BeakerWrapper[m_ArrayX, m_ArrayY];
 		//int blue = 2;
 		//int red = 2;
@@ -41,6 +51,88 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+		switch (m_GameState) {
+		case GameState.PreMatch:
+			if (Input.GetButtonDown("Start"))
+			{
+				m_GameState = GameState.Match;
+				UnlockPlayers();
+				m_NewMatch =true;
+				RevealObjective();
+			}
+			break;
+		case GameState.Match:
+			if(m_NewMatch)
+			{
+				m_TimeOnRound = m_TimeLimit;
+				m_NewMatch = false;
+
+			}
+			if(m_TimeOnRound > 0)
+			{
+				Debug.Log( m_TimeOnRound );
+				m_TimeOnRound = m_TimeOnRound - Time.deltaTime;
+
+				switch (m_RevealedObjectives)
+				{
+				case 1:
+					if(m_TimeOnRound < m_TimeLimit/2)
+					{
+						RevealObjective();
+					}
+					break;
+				case 2:
+
+					if(m_TimeOnRound < m_TimeLimit/3)
+					{
+						RevealObjective();
+					}
+					break;
+				case 3:
+					break;
+				}
+
+			}
+			else{
+				m_TimeLimit = m_TimeLimit - m_TimeReduction;
+				m_GameState = GameState.OutCome;
+			}
+			break;
+		case GameState.OutCome:
+			LockPlayers();
+			m_GameState = GameState.PreMatch;
+
+			break;
+		}
+
+
+	}
+	private void UnlockPlayers()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+		foreach(GameObject player in players)
+		{
+			player.GetComponent<Player>().UnFreeze();
+		}
+	}
+
+	private void LockPlayers()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		
+		foreach(GameObject player in players)
+		{
+			player.GetComponent<Player>().Freeze();
+		}
+	}
+
+	void RevealObjective()
+	{
+		if (m_RevealedObjectives < 3) {
+			m_WishList[m_RevealedObjectives].GetComponent<SpriteRenderer>().color = Color.green;
+			m_RevealedObjectives++;
+		}
 	}
 
 	public void BeakerClicked(Vector2 id, GameObject Player, Color color)
