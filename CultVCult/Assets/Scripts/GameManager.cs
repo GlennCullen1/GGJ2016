@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 enum GameState{PreMatch,Match,OutCome, GameOver}
 
@@ -86,7 +87,6 @@ public class GameManager : MonoBehaviour {
 			}
 			if(m_TimeOnRound > 0)
 			{
-				//Debug.Log( m_TimeOnRound );
 				m_TimeOnRound = m_TimeOnRound - Time.deltaTime;
 
 				switch (m_RevealedObjectives)
@@ -192,40 +192,86 @@ public class GameManager : MonoBehaviour {
 		bool second = false;
 		bool third = false;
 		try{
+
+				Debug.Log (System.String.Format ("The three objectives were: 1. {0} 2. {1} 3. {2}", 
+			           						Colors.floatToNames [m_WishList[0].GetComponent<SpriteRenderer> ().color],
+			                                 Colors.floatToNames [m_WishList[1].GetComponent<SpriteRenderer> ().color],
+			                                 Colors.floatToNames [m_WishList[2].GetComponent<SpriteRenderer> ().color]));
+
+		var bufferWish = m_WishList.ToList();
+			Debug.Log (bufferWish.Count);
 		foreach (BeakerWrapper beaker in m_Beakers) {
 				if (beaker.m_Beaker && beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white) {
-				foreach (GameObject wish in m_WishList) {
+				
+					for(int cnt = 0; cnt < bufferWish.Count; cnt++)
+					{
+						if (Colors.floatToNames [bufferWish[cnt].GetComponent<SpriteRenderer> ().color] == 
+						    Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
+							Debug.Log( System.String.Format ("1. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
+							                                 beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
+							                                 beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
+							                                 Colors.floatToNames [bufferWish[cnt].GetComponent<SpriteRenderer> ().color],
+							                                 Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
+							bufferWish.RemoveAt(cnt);
+							cnt--;
+							break;
+						}
+					}
+
+					//foreach (GameObject wish in m_WishList) {
 	
+
+
+
+						/*
 					if (!first) {
 						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
 							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
+								Debug.Log( System.String.Format ("1. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
+								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
+								          						Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
 							first = true;
 							break;
 						}
 					}
-					if (!second) {
+				
+					else if (!second) {
 						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
 							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-							second = true;
+								Debug.Log(System.String.Format ("2. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
+								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
+								          Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));							
+								second = true;
 							break;
 						}
 					}
-					if (!third) {
+					else if (!third) {
 						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
 							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-							third = true;
+								Debug.Log(System.String.Format ("3. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
+								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
+								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
+								          Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
+								third = true;
 							break;
 						}
-					}
+					}*/
 				
 				}
 			}
-			}}
+			return bufferWish.Any();			
+		}
 		catch(System.Exception ex)
 		{
 			Debug.Log(ex);
+			return false;
 		}
-
+		/*
 		if(first&&second&&third)
 		{
 			return false;
@@ -233,7 +279,7 @@ public class GameManager : MonoBehaviour {
 		else
 		{
 			return true;
-		}
+		}*/
 	 }
 
 	public void BeakerClicked(Vector2 id, GameObject Player, Color color)

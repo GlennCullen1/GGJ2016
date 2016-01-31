@@ -85,7 +85,6 @@ public class Beaker : MonoBehaviour {
 	{ 
 		GetComponent<ParticleSystem> ().startColor = color;
 		GetComponent<ParticleSystem> ().enableEmission = true;
-		Debug.Log ("did it");
 	}
 
 	public void DeSelect()
