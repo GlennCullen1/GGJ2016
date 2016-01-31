@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour {
 				ResetAllBeakers();
 				ResetObjectives();
 				RevealObjective();
+				ResetGoals();
 			}
 			break;
 		case GameState.Match:
@@ -339,6 +340,15 @@ public class GameManager : MonoBehaviour {
 		
 		foreach (GameObject player in players) {
 			player.GetComponent<Player>().GetScore();
+		}
+	}
+
+	private void ResetGoals()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		
+		foreach (GameObject player in players) {
+			player.GetComponent<Player>().NewTarget();
 		}
 	}
 }
