@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class Player : MonoBehaviour {
 
 	public Color m_PlayerColor;
@@ -10,6 +11,7 @@ public class Player : MonoBehaviour {
 	public GameObject m_ScoreOrb;
 	public float m_Speed = 5;
 	public string m_InputName;
+	public string m_ColorID;
 	public int m_Score;
 	private GameManager m_GameManager;
 	bool m_Frozen;
@@ -24,14 +26,15 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!m_Frozen) {
+
 			//gameObject.GetComponent<SpriteRenderer> ().color = m_PlayerColor;
 			gameObject.transform.Translate (Input.GetAxis (m_InputName + "Horizontal") * m_Speed * Time.deltaTime, Input.GetAxis (m_InputName + "Vertical") * m_Speed * Time.deltaTime, 0);
-		}
+
 		m_DisplayTarget.GetComponent<SpriteRenderer> ().color = m_TargetColor;
 	}
 	void OnTriggerStay2D(Collider2D other)
 	{
+	if (!m_Frozen) {
 		if (other.tag == "Beaker") {
 			if(Input.GetButtonDown(m_InputName + "Red"))
 			{
@@ -46,6 +49,7 @@ public class Player : MonoBehaviour {
 				other.gameObject.GetComponent<Beaker>().Selected(gameObject, Colors.GetYellow());
 			}
 		}
+	}
 	}
 
 	public void GetScore()

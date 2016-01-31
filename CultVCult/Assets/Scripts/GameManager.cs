@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-
-enum GameState{PreMatch,Match,OutCome, GameOver}
-
+using UnityEngine.UI;
+enum GameState{SplashScreen,PreMatch,Match,OutCome, GameOver}
+enum SplashScreenState{Spalsh,Instructions,nextMatch,GameOver}; 
 public class GameManager : MonoBehaviour {
 
 	BeakerWrapper[,] m_Beakers;
@@ -16,14 +17,23 @@ public class GameManager : MonoBehaviour {
 	public float m_TimeLimit;
 	public float m_TimeOnRound;
 	public float m_TimeReduction;
+	 float m_MaxTime;
 	int m_RevealedObjectives = 0;
 	public GameObject[] m_WishList;
+	public GameObject SplashScreen;
+	SplashScreenState m_ActiveSplashScreen;
+	public Sprite[] m_ListOfSlashScreens;
+	public Text m_GameOverText;
+	bool m_IsFirstRound;
 	// Use this for initialization
 	void Start ()
 	{
+		m_GameOverText.gameObject.SetActive(false);
 		m_NewMatch = true;
-		m_GameState = GameState.PreMatch;
+		m_IsFirstRound = true;
+		m_GameState = GameState.SplashScreen;
 		m_Beakers = new BeakerWrapper[m_ArrayX, m_ArrayY];
+		m_MaxTime = m_TimeLimit;
 		//int blue = 2;
 		//int red = 2;
 		//int green = 2;
@@ -66,10 +76,30 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 	
 		switch (m_GameState) {
-		case GameState.PreMatch:
+		case GameState.SplashScreen:
+			SplashScreen.transform.parent.gameObject.SetActive(true);
+			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.Spalsh];
+
 			if (Input.GetButtonDown("Start"))
 			{
-
+				m_GameState = GameState.PreMatch;
+				SplashScreen.transform.parent.gameObject.SetActive(false);
+			}
+			break;
+		case GameState.PreMatch:
+			if(m_IsFirstRound)
+			{
+				SplashScreen.transform.parent.gameObject.SetActive(true);
+				SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.Instructions];
+				//m_IsFirstRound=false;
+			}
+			else{
+				SplashScreen.transform.parent.gameObject.SetActive(true);
+				SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.nextMatch];
+			}
+			if (Input.GetButtonDown("Start"))
+			{
+				SplashScreen.transform.parent.gameObject.SetActive(false);
 				m_GameState = GameState.Match;
 				UnlockPlayers();
 				m_NewMatch =true;
@@ -77,6 +107,10 @@ public class GameManager : MonoBehaviour {
 				ResetObjectives();
 				RevealObjective();
 				ResetGoals();
+				if(m_IsFirstRound)
+				{
+					m_IsFirstRound = false;
+				}
 			}
 			break;
 		case GameState.Match:
@@ -126,19 +160,61 @@ public class GameManager : MonoBehaviour {
 			else
 			{
 				m_GameState = GameState.GameOver;
-				UpdateScores();
+
+
 			}
 			break;
 		case GameState.GameOver:
-			Debug.Log("You were all devoured");
-			m_GameState = GameState.PreMatch;
+			//Debug.Log("You were all devoured");
+			EndGame();
+			ResetLevel();
+			SplashScreen.transform.parent.gameObject.SetActive(true);
+			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.GameOver];
+			if (Input.GetButtonDown("Start"))
+			{
+				m_GameState = GameState.SplashScreen;
+				SplashScreen.transform.parent.gameObject.SetActive(false);
+
+			}
 			break;
 		}
 
 
 	}
 
+	void EndGame()
+	{
+		List<GameObject> Player = new List<GameObject>();
 
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		Player.Add(players [0]);
+		foreach (GameObject player in players) {
+			if( player.GetComponent<Player>().m_Score > Player[0].GetComponent<Player>().m_Score)
+			{
+				Player = new List<GameObject>();
+				Player.Add(player);
+			}
+			else if (player.GetComponent<Player>().m_Score == Player[0].GetComponent<Player>().m_Score)
+			{
+				Player.Add(player);
+			}
+		}
+		m_GameOverText.gameObject.SetActive(true);
+		m_GameOverText.text = "Except ";
+		if (Player [0].GetComponent<Player> ().m_Score > 0) {
+			Debug.Log ("You Were all devoured except ");
+			foreach (GameObject player in Player)
+			{
+				Debug.Log(player.GetComponent<Player>().m_InputName);
+				m_GameOverText.text = m_GameOverText.text + player.GetComponent<Player>().m_ColorID + " ";
+
+			}
+		} else {
+			Debug.Log ("You all sucked so hard the demon doesn't want any of you. You are all devoured! ");
+			m_GameOverText.text = "Yup, all of you!";
+		}
+
+	}
 
 	private void UnlockPlayers()
 	{
@@ -350,6 +426,23 @@ public class GameManager : MonoBehaviour {
 		foreach (GameObject player in players) {
 			player.GetComponent<Player>().NewTarget();
 		}
+	}
+
+	private void ResetLevel()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		
+		foreach (GameObject player in players) {
+			player.GetComponent<Player>().m_Score = 0;;
+		}
+
+		GameObject[] orbs = GameObject.FindGameObjectsWithTag("ScoreOrb");
+		
+		foreach (GameObject orb in orbs) {
+			Destroy(orb);
+		}
+
+		m_TimeLimit = m_MaxTime;
 	}
 }
 			                  
