@@ -60,7 +60,7 @@ public class Player : MonoBehaviour {
 
 		for (int count = 1; count <= numberofbeakers; count++) {
 			Vector3 pos = m_DisplayTarget.transform.position;
-			pos.x += (count+m_Score*0.2f)*dir;
+			pos.x += (1+(count+m_Score)*0.2f)*dir;
 			Instantiate(m_ScoreOrb,pos,Quaternion.identity);
 		}
 

@@ -38,23 +38,8 @@ public class GameManager : MonoBehaviour {
 		//int red = 2;
 		//int green = 2;
 
-		for (int cntx = 0; cntx < m_ArrayX; cntx++) {
-			for (int cnty = 0; cnty < m_ArrayY; cnty++) {
-				m_Beakers [cntx, cnty].m_IsOccupied = false;
-				if(Random.Range(0,100)<m_SpawnChance)
-				{
-					//Vector3 Pos = new Vector3( (float)((-(4.25*m_ArrayX/2)+(cntx*4.25))*m_BeakerPrefab.transform.localScale.x), (float)((-(4.9*m_ArrayY/2)+cnty*4.9))*m_BeakerPrefab.transform.localScale.y,0.0f);
-					Vector3 Pos = new Vector3((float)(-8+3.5*cntx),(float)(-4+1.5*cnty+0.5),0.0f);
-					m_Beakers [cntx, cnty] = new BeakerWrapper ();
-					m_Beakers [cntx, cnty].m_Locked = false;
-					m_Beakers [cntx, cnty].m_PlayerID = -1;
-					m_Beakers [cntx, cnty].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,Pos, Quaternion.identity);
-					m_Beakers [cntx, cnty].m_IsOccupied = true;
-					m_Beakers [cntx, cnty].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(cntx,cnty));
-				}
-			}
-		}
 
+		RandomBeaker ();
 
 	/*
 		m_Beakers [3, 3] = new BeakerWrapper ();
@@ -77,6 +62,7 @@ public class GameManager : MonoBehaviour {
 	
 		switch (m_GameState) {
 		case GameState.SplashScreen:
+			m_IsFirstRound = true;
 			SplashScreen.transform.parent.gameObject.SetActive(true);
 			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.Spalsh];
 
@@ -107,6 +93,7 @@ public class GameManager : MonoBehaviour {
 				ResetObjectives();
 				RevealObjective();
 				ResetGoals();
+				RandomBeaker();
 				if(m_IsFirstRound)
 				{
 					m_IsFirstRound = false;
@@ -167,13 +154,15 @@ public class GameManager : MonoBehaviour {
 		case GameState.GameOver:
 			//Debug.Log("You were all devoured");
 			EndGame();
-			ResetLevel();
+
 			SplashScreen.transform.parent.gameObject.SetActive(true);
 			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.GameOver];
 			if (Input.GetButtonDown("Start"))
 			{
 				m_GameState = GameState.SplashScreen;
 				SplashScreen.transform.parent.gameObject.SetActive(false);
+				ResetLevel();
+				m_GameOverText.gameObject.SetActive(false);
 
 			}
 			break;
@@ -203,15 +192,26 @@ public class GameManager : MonoBehaviour {
 		m_GameOverText.text = "Except ";
 		if (Player [0].GetComponent<Player> ().m_Score > 0) {
 			Debug.Log ("You Were all devoured except ");
+			bool ifgone = false; 
+			if (Player.Count > 1)
+			{
+				Player.RemoveAt(0);
+			}
 			foreach (GameObject player in Player)
 			{
 				Debug.Log(player.GetComponent<Player>().m_InputName);
-				m_GameOverText.text = m_GameOverText.text + player.GetComponent<Player>().m_ColorID + " ";
+				//m_GameOverText.text = m_GameOverText.text + "and "+ player.GetComponent<Player>().m_ColorID + " ";
+				if(ifgone)
+				{
+					m_GameOverText.text = m_GameOverText.text + " and ";
+				}
+				m_GameOverText.text =m_GameOverText.text + player.GetComponent<Player>().m_ColorID;
+				ifgone = true;
 
 			}
 		} else {
 			Debug.Log ("You all sucked so hard the demon doesn't want any of you. You are all devoured! ");
-			m_GameOverText.text = "Yup, all of you!";
+			m_GameOverText.text = "You are all devoured!";
 		}
 
 	}
@@ -262,7 +262,33 @@ public class GameManager : MonoBehaviour {
 			m_RevealedObjectives = 0;
 		}
 	 }
-
+	void RandomBeaker()
+	{
+		foreach(BeakerWrapper beaker in m_Beakers)
+		{
+			if(beaker.m_Beaker)
+			{
+				Destroy(beaker.m_Beaker);
+				//beaker.m_Beaker = null;
+			}
+		}
+		for (int cntx = 0; cntx < m_ArrayX; cntx++) {
+			for (int cnty = 0; cnty < m_ArrayY; cnty++) {
+				m_Beakers [cntx, cnty].m_IsOccupied = false;
+				if(Random.Range(0,100)<m_SpawnChance)
+				{
+					//Vector3 Pos = new Vector3( (float)((-(4.25*m_ArrayX/2)+(cntx*4.25))*m_BeakerPrefab.transform.localScale.x), (float)((-(4.9*m_ArrayY/2)+cnty*4.9))*m_BeakerPrefab.transform.localScale.y,0.0f);
+					Vector3 Pos = new Vector3((float)(-8+3.5*cntx),(float)(-4+1.5*cnty+0.5),0.0f);
+					m_Beakers [cntx, cnty] = new BeakerWrapper ();
+					m_Beakers [cntx, cnty].m_Locked = false;
+					m_Beakers [cntx, cnty].m_PlayerID = -1;
+					m_Beakers [cntx, cnty].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,Pos, Quaternion.identity);
+					m_Beakers [cntx, cnty].m_IsOccupied = true;
+					m_Beakers [cntx, cnty].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(cntx,cnty));
+				}
+			}
+		}
+	}
 	bool DidTheyDie()
 	{
 		bool first = false;
