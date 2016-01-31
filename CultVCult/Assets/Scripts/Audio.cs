@@ -43,8 +43,9 @@ public class Audio : MonoBehaviour
         return FillingSounds[randomSelector];
     }
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public static void StartGameMusic()
+    {
+        GameManager.AudioSources["BackgroundPiano"].Stop();
+        GameManager.AudioSources["Score"].Play();
+    }
 }

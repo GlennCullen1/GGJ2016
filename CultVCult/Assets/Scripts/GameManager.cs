@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour {
 			{
 				SplashScreen.transform.parent.gameObject.SetActive(true);
 				SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.Instructions];
-				//m_IsFirstRound=false;
 			}
 			else{
 				SplashScreen.transform.parent.gameObject.SetActive(true);
@@ -80,6 +79,8 @@ public class GameManager : MonoBehaviour {
 				{
 					m_IsFirstRound = false;
 				}
+			    Audio.StartGameMusic();
+
 			}
 			break;
 		case GameState.Match:
