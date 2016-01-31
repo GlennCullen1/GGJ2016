@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
-enum GameState{SplashScreen,PreMatch,Match,OutCome, GameOver}
-enum SplashScreenState{Spalsh,Instructions,nextMatch,GameOver}; 
+enum GameState{SplashScreen,PreMatch,Match,OutCome, GameOver,Credits}
+enum SplashScreenState{Spalsh,Instructions,nextMatch,GameOver,Credits}; 
 public class GameManager : MonoBehaviour {
 
     public static Dictionary<string, AudioSource> AudioSources = new Dictionary<string, AudioSource>();
@@ -139,13 +139,25 @@ public class GameManager : MonoBehaviour {
 			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.GameOver];
 			if (Input.GetButtonDown("Start"))
 			{
-				m_GameState = GameState.SplashScreen;
+				m_GameState = GameState.Credits;
 				SplashScreen.transform.parent.gameObject.SetActive(false);
 				ResetLevel();
 				m_GameOverText.gameObject.SetActive(false);
 
 			}
 			break;
+		case GameState.Credits:
+			SplashScreen.transform.parent.gameObject.SetActive(true);
+			SplashScreen.GetComponent<SpriteRenderer>().sprite = m_ListOfSlashScreens[(int)SplashScreenState.Credits];
+			if (Input.GetButtonDown("Start"))
+			{
+				m_GameState = GameState.SplashScreen;
+				SplashScreen.transform.parent.gameObject.SetActive(false);
+			
+				
+			}
+			break;
+
 		}
 	}
 
@@ -169,7 +181,7 @@ public class GameManager : MonoBehaviour {
 		m_GameOverText.gameObject.SetActive(true);
 		m_GameOverText.text = "Except ";
 		if (Player [0].GetComponent<Player> ().m_Score > 0) {
-			Debug.Log ("You Were all devoured except ");
+			//Debug.Log ("You Were all devoured except ");
 			bool ifgone = false; 
 			if (Player.Count > 1)
 			{
@@ -177,7 +189,7 @@ public class GameManager : MonoBehaviour {
 			}
 			foreach (GameObject player in Player)
 			{
-				Debug.Log(player.GetComponent<Player>().m_InputName);
+				//Debug.Log(player.GetComponent<Player>().m_InputName);
 				//m_GameOverText.text = m_GameOverText.text + "and "+ player.GetComponent<player>().m_ColorID + " ";
 				if(ifgone)
 				{
@@ -188,7 +200,7 @@ public class GameManager : MonoBehaviour {
 
 			}
 		} else {
-			Debug.Log ("You all sucked so hard the demon doesn't want any of you. You are all devoured! ");
+			//Debug.Log ("You all sucked so hard the demon doesn't want any of you. You are all devoured! ");
 			m_GameOverText.text = "You are all devoured!";
 		}
 
@@ -270,7 +282,7 @@ public class GameManager : MonoBehaviour {
 	bool DidTheyDie()
 	{
 		var bufferWish = m_WishList.ToList();
-			Debug.Log (bufferWish.Count);
+			//Debug.Log (bufferWish.Count);
 		foreach (BeakerWrapper beaker in m_Beakers)
         {
 			if (beaker.m_Beaker && beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white) {

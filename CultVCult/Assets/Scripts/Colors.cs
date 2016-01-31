@@ -64,7 +64,7 @@ public class Colors
 		    || floatToNames[primary] > ColorNames.PRIMARY 
 		    || floatToNames[other] > ColorNames.SECONDARY)
 		{
-			Debug.LogError(String.Format("ERROR: primary: {0}, other: {1}", primary.ToString(), other.ToString()));
+			//Debug.LogError(String.Format("ERROR: primary: {0}, other: {1}", primary.ToString(), other.ToString()));
 		}
 		
 		try
@@ -74,7 +74,7 @@ public class Colors
 		}
 		catch(Exception)
 		{
-			Debug.LogError(String.Format("ERROR: primary: {0}, other: {1}", floatToNames[primary].ToString(), floatToNames[other].ToString()));
+			//Debug.LogError(String.Format("ERROR: primary: {0}, other: {1}", floatToNames[primary].ToString(), floatToNames[other].ToString()));
 			throw;
 		}
 	}
