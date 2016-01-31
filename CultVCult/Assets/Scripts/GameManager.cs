@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 enum GameState{PreMatch,Match,OutCome, GameOver}
@@ -18,15 +19,13 @@ public class GameManager : MonoBehaviour {
 	public float m_TimeReduction;
 	int m_RevealedObjectives = 0;
 	public GameObject[] m_WishList;
-	// Use this for initialization
-	void Start ()
+    public static Dictionary<string, AudioSource> AudioSources = new Dictionary<string, AudioSource>();
+    // Use this for initialization
+    void Start ()
 	{
 		m_NewMatch = true;
 		m_GameState = GameState.PreMatch;
 		m_Beakers = new BeakerWrapper[m_ArrayX, m_ArrayY];
-		//int blue = 2;
-		//int red = 2;
-		//int green = 2;
 
 		for (int cntx = 0; cntx < m_ArrayX; cntx++) {
 			for (int cnty = 0; cnty < m_ArrayY; cnty++) {
@@ -46,20 +45,6 @@ public class GameManager : MonoBehaviour {
 		}
 
 
-	/*
-		m_Beakers [3, 3] = new BeakerWrapper ();
-		m_Beakers [3, 3].m_Locked = false;
-		m_Beakers [3, 3].m_PlayerID = -1;
-		m_Beakers [3, 3].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(1,2,0), Quaternion.identity);
-		m_Beakers [3, 3].m_IsOccupied = true;
-		m_Beakers [3, 3].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(3,3));
-
-		m_Beakers [4, 4] = new BeakerWrapper ();
-		m_Beakers [4, 4].m_Locked = false;
-		m_Beakers [4, 4].m_PlayerID = -1;
-		m_Beakers [4, 4].m_Beaker = (GameObject)Instantiate(m_BeakerPrefab,new Vector3(-2,0,0), Quaternion.identity);
-		m_Beakers [4, 4].m_IsOccupied = true;
-		m_Beakers [4, 4].m_Beaker.GetComponent<Beaker>().SetCoords(new Vector2(4,4));*/
 	}
 	
 	// Update is called once per frame
@@ -116,20 +101,19 @@ public class GameManager : MonoBehaviour {
 			break;
 		case GameState.OutCome:
 			LockPlayers();
-			if(!DidTheyDie())
-			{
-				m_GameState = GameState.PreMatch;
-				Debug.Log ("we made it");
-				UpdateScores();
-			}
-			else
-			{
-				m_GameState = GameState.GameOver;
-				UpdateScores();
-			}
-			break;
+		    if (DidTheyDie())
+		    {
+                AudioSources["Growl"].Play();
+		        m_GameState = GameState.GameOver;
+		        UpdateScores();
+		    }
+		    else
+		    {
+		        m_GameState = GameState.PreMatch;
+		        UpdateScores();
+		    }
+		    break;
 		case GameState.GameOver:
-			Debug.Log("You were all devoured");
 			m_GameState = GameState.PreMatch;
 			break;
 		}
@@ -188,140 +172,36 @@ public class GameManager : MonoBehaviour {
 
 	bool DidTheyDie()
 	{
-		bool first = false;
-		bool second = false;
-		bool third = false;
-		try{
-
-				Debug.Log (System.String.Format ("The three objectives were: 1. {0} 2. {1} 3. {2}", 
-			           						Colors.floatToNames [m_WishList[0].GetComponent<SpriteRenderer> ().color],
-			                                 Colors.floatToNames [m_WishList[1].GetComponent<SpriteRenderer> ().color],
-			                                 Colors.floatToNames [m_WishList[2].GetComponent<SpriteRenderer> ().color]));
-
 		var bufferWish = m_WishList.ToList();
 			Debug.Log (bufferWish.Count);
-		foreach (BeakerWrapper beaker in m_Beakers) {
-				if (beaker.m_Beaker && beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white) {
+		foreach (BeakerWrapper beaker in m_Beakers)
+        {
+			if (beaker.m_Beaker && beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white) {
 				
-					for(int cnt = 0; cnt < bufferWish.Count; cnt++)
-					{
-						if (Colors.floatToNames [bufferWish[cnt].GetComponent<SpriteRenderer> ().color] == 
-						    Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-							Debug.Log( System.String.Format ("1. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
-							                                 beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
-							                                 beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
-							                                 Colors.floatToNames [bufferWish[cnt].GetComponent<SpriteRenderer> ().color],
-							                                 Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
-							bufferWish.RemoveAt(cnt);
-							cnt--;
-							break;
-						}
+				for(int cnt = 0; cnt < bufferWish.Count; cnt++)
+				{
+					if (Colors.floatToNames [bufferWish[cnt].GetComponent<SpriteRenderer> ().color] == 
+						Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()])
+                    {
+						bufferWish.RemoveAt(cnt);
+						cnt--;
+						break;
 					}
-
-					//foreach (GameObject wish in m_WishList) {
-	
-
-
-
-						/*
-					if (!first) {
-						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
-							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-								Debug.Log( System.String.Format ("1. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
-								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
-								          						Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
-							first = true;
-							break;
-						}
-					}
-				
-					else if (!second) {
-						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
-							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-								Debug.Log(System.String.Format ("2. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
-								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
-								          Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));							
-								second = true;
-							break;
-						}
-					}
-					else if (!third) {
-						if (Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color] == 
-							Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]) {
-								Debug.Log(System.String.Format ("3. Location: {0}, {1}; Color: {2} with beaker colour: {3}", 
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().x,
-								                                beaker.m_Beaker.GetComponent<Beaker>().GetCoords().y,
-								                                Colors.floatToNames [wish.GetComponent<SpriteRenderer> ().color],
-								          Colors.floatToNames [beaker.m_Beaker.GetComponent<Beaker> ().GetColor ()]));
-								third = true;
-							break;
-						}
-					}*/
-				
 				}
 			}
-			return bufferWish.Any();			
 		}
-		catch(System.Exception ex)
-		{
-			Debug.Log(ex);
-			return false;
-		}
-		/*
-		if(first&&second&&third)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}*/
+
+		return bufferWish.Any();			
 	 }
 
 	public void BeakerClicked(Vector2 id, GameObject Player, Color color)
 	{
-		/*
-		if (m_Beakers [(int)id.x, (int)id.y].m_Locked != true) {
-
-			//HERE GET PLAYER ID
-			int PlayerID = 1;
-			m_Beakers [(int)id.x, (int)id.y].m_Locked = true;
-			m_Beakers [(int)id.x, (int)id.y].m_PlayerID = PlayerID;
-			m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().SetColor(Color.green);
-			bool matched = false;
-			foreach (BeakerWrapper obj in m_Beakers)
-			{
-				if (obj.m_PlayerID == PlayerID && obj.m_Beaker != m_Beakers [(int)id.x, (int)id.y].m_Beaker && !matched  )
-				{
-					m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
-					obj.m_Beaker.GetComponent<Beaker>().DeSelect();
-					Vector2 loc = obj.m_Beaker.GetComponent<Beaker>().GetCoords();
-					m_Beakers[(int)loc.x,(int)loc.y].m_Locked = false;
-					m_Beakers [(int)id.x, (int)id.y].m_Locked = false;
-					m_Beakers[(int)loc.x,(int)loc.y].m_PlayerID = 0;
-					m_Beakers [(int)id.x, (int)id.y].m_PlayerID = 0;
-					//obk
-					matched = true;
-				}
-			}
-			if (matched == false)
-			{
-				//make a player color
-				Color playerC = Player.GetComponent<Player>().m_PlayerColor;
-				m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Select(playerC);
-			}
-		}*/
-		Debug.Log (id.x+","+id.y);
 		m_Beakers [(int)id.x, (int)id.y].m_Beaker.GetComponent<Beaker>().Mix(color);
-
 	}
 
 	public int HowManyColor(Color targetcolor)
-	{ int cnt = 0;
+	{
+        int cnt = 0;
 		foreach (BeakerWrapper beaker in m_Beakers) {
 			if(beaker.m_Beaker &&
 			   beaker.m_Beaker.GetComponent<Beaker>().GetColor()!= Color.white &&

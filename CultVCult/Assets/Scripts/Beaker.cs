@@ -71,7 +71,6 @@ public class Beaker : MonoBehaviour {
 	public void Selected(GameObject Player, Color color)
 	{
 		GameObject.FindGameObjectWithTag ("GameManager").GetComponent<GameManager> ().BeakerClicked (m_GridCoords, Player, color);
-		Debug.Log ("select");
 	}
 
 	public void Select(Color color)
@@ -86,6 +85,8 @@ public class Beaker : MonoBehaviour {
 	}
 	public void Mix(Color mixer)
 	{
+	    Audio.GetRandomFillingSound().Play();
+
 		if(m_liquidVolume == 0)
 		{
 			SetColor(mixer);	
